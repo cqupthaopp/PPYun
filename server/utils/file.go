@@ -100,3 +100,41 @@ func GetFileType(t string) config.FileKind {
 func GetSuffix(name string) string {
 	return strings.Split(name, ".")[len(strings.Split(name, "."))-1]
 }
+
+//GetFileStruct DFS获取文件的结构体
+func GetFileStruct(path string, data *config.Folder) *config.File {
+
+	for _, fi := range data.Files {
+		if fi.FilePath == path {
+			return &fi
+		}
+	}
+
+	for _, fo := range data.FolderSons {
+		ans := GetFileStruct(path, &fo)
+		if ans != nil {
+			return ans
+		}
+	}
+
+	return nil
+
+}
+
+//ModifyFileStruct 修改权限
+func ModifyFileStruct(path string, data *config.Folder, allCanDownload, downloadOnLink, onlyDonwloadByOwner bool) {
+
+	for k := 0; k < len(data.Files); k++ {
+		if data.Files[k].FilePath == path {
+			data.Files[k].AllCanDownload = allCanDownload
+			data.Files[k].CanDownloadOnLink = downloadOnLink
+			data.Files[k].OnlyDownloadOwner = onlyDonwloadByOwner
+		}
+	}
+
+	for _, fo := range data.FolderSons {
+		GetFileStruct(path, &fo)
+	}
+	return
+
+}

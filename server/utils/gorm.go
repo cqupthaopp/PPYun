@@ -69,6 +69,26 @@ func MD5CountAdd(MD5 string) {
 	md5_db.Where("md5 = ?", MD5).Update("count", ans.Count+1)
 }
 
+//MD5CountAdd MD5文件使用量自减
+func MD5CountDel(MD5 string) {
+	var ans config.MD5File
+	md5_db := ConnectTable(config.File_MD5_table)
+	md5_db.Where("md5 = ?", MD5).First(&ans)
+	if ans.Count > 1 {
+		md5_db.Where("md5 = ?", MD5).Update("count", ans.Count-1)
+	} else {
+		md5_db.Delete(&ans)
+	}
+}
+
+//GetMD5Count 获取该文件的剩余使用量
+func GetMD5Count(MD5 string) int {
+	var ans config.MD5File
+	md5_db := ConnectTable(config.File_MD5_table)
+	md5_db.Where("md5 = ?", MD5).First(&ans)
+	return ans.Count
+}
+
 //AddMD5InDB 将MD5添加入数据库
 func AddMD5InDB(MD5 string, Size int64) {
 	md5_db := ConnectTable(config.File_MD5_table)

@@ -30,8 +30,7 @@ func GetUserData(username string, datas *config.Folder) {
 		Zap().Info(err.Error())
 		return
 	}
-
-	json.Unmarshal([]byte(fmt.Sprint("&v", ans)), &datas)
+	json.Unmarshal([]byte(fmt.Sprintf("%s", ans)), &datas)
 
 }
 
