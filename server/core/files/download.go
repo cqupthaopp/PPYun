@@ -22,14 +22,14 @@ func DownloadFile(c *gin.Context) {
 
 	head := c.GetHeader("Authorization")
 	username, ok := utils.JudgeAccessToken(head)
-	if ok {
+	if !ok {
 		c.JSON(401, map[string]interface{}{
 			"staus": "10004",
 			"info":  "AccessToken Error",
 		})
 		return
 	} //验证Token
-	username = "Hao_pp"
+
 	path := config.File_path + username + "\\" + c.Query("path") //下载的文件的相对路径
 	if ok, err := utils.PathExists(path); !ok || err != nil {
 		c.JSON(401, map[string]interface{}{
