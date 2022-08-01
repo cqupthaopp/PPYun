@@ -51,9 +51,7 @@ func ModifyPermission(c *gin.Context) {
 	var userdata config.Folder //用户的文件树
 	utils.GetUserData(username, &userdata)
 	utils.ModifyFileStruct("\\"+c.PostForm("path"), &userdata, allCanDownload, downloadOnLink, onlyDonwloadByOwner)
-
-	fmt.Println(userdata)
-
+	
 	jsonAns, err := utils.MarshalFiles(&userdata) //序列化
 	if err != nil {
 		utils.Zap().Info(err.Error())
