@@ -3,6 +3,7 @@ package files
 import (
 	"PPYun/server/config"
 	"PPYun/server/utils"
+	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -128,6 +129,36 @@ func UploadFile(c *gin.Context) {
 		}
 		utils.UpDateUserFilesPath(username)
 	} //全部上传完成就更新用户的文件树
+
+	{
+		os.Create(config.MD5_path + md5 + "\\" + filename)
+		sum, err := os.OpenFile(config.MD5_path+md5+"\\"+filename, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+		if err != nil {
+			c.JSON(401, map[string]interface{}{
+				"statu": 10004,
+				"info":  "Saved File Faild",
+			})
+			return
+		} //合并文件失败
+		writer := bufio.NewWriter(sum)
+		for fiNum := 1; fiNum <= chunks; fiNum++ {
+			now, err := os.ReadFile(config.MD5_path + md5 + "\\" + strconv.Itoa(fiNum) + ".download")
+			if err != nil {
+				c.JSON(401, map[string]interface{}{
+					"statu": 10004,
+					"info":  "Saved File Faild",
+				})
+				return
+			} //合并文件失败
+			writer.Write(now)
+			writer.Flush()
+		} //遍历文件序号
+
+		for fiNum := 1; fiNum <= chunks; fiNum++ {
+			os.Remove(config.MD5_path + md5 + "\\" + strconv.Itoa(fiNum) + ".download") // 删除分块文件
+		}
+
+	} //合并文件
 
 	c.JSON(200, map[string]interface{}{
 		"statu": 10000,
