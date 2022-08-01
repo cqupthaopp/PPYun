@@ -95,8 +95,3 @@ func DownloadFile(c *gin.Context) {
 	return
 
 }
-
-//DownloadFileOnLink 通过链接下载文件
-func DownloadFileOnLink() {
-
-}
